@@ -21,10 +21,10 @@ class CreateDishesTable extends Migration
             $table->integer('provider')->unsigned()->comment('供应者餐厅id');
             $table->integer('price')->unsigned()->comment('价格 (单位人民币分)');
             $table->timestamps();
-            
+
             $table->index('provider');
             $table->foreign('provider')->references('id')->on('shops');
-            
+
         });
     }
 
@@ -35,6 +35,6 @@ class CreateDishesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('dishes');
+        Schema::dropIfExists('dishes');
     }
 }

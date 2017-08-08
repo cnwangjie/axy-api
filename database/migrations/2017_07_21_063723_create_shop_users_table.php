@@ -14,11 +14,11 @@ class CreateShopUsersTable extends Migration
     {
         Schema::create('shop_users', function (Blueprint $table) {
             $table->integer('id')->unsigned()->comment('商家id');
-            $table->string('username', 50)->comment('用户名');
-            $table->string('password', 50)->comment('密码');
+            $table->string('tel', 50)->comment('登录用户名 (手机号)');
+            $table->string('password', 100)->comment('密码');
             $table->tinyInteger('status')->unsigned()->default(0)->comment('状态 0:未激活 1:激活');
             $table->timestamps();
-            
+
             $table->primary('id');
             $table->foreign('id')->references('id')->on('shops');
         });
@@ -31,6 +31,6 @@ class CreateShopUsersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('shop_users');
+        Schema::dropIfExists('shop_users');
     }
 }

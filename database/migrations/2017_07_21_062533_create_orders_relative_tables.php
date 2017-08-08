@@ -23,20 +23,20 @@ class CreateOrdersRelativeTables extends Migration
             $table->integer('delivery_time_id')->unsigned()->comment('配送时间id');
             $table->string('remark', 255)->nullable()->comment('备注');
             $table->timestamps();
-            
+
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('delivery_time_id')->references('id')->on('delivery_times');
             $table->foreign('provider')->references('id')->on('shops');
             $table->index('provider');
             $table->index('user_id');
         });
-        
+
         Schema::create('order_details', function (Blueprint $table) {
             $table->integer('order_id')->unsigned()->comment('订单id');
             $table->integer('item_id')->unsigned()->comment('菜品id');
             $table->integer('price')->unsigned()->comment('下单价格 (单位人民币分)');
             $table->integer('sum')->unsigned()->comment('数量');
-            
+
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('item_id')->references('id')->on('dishes');
         });
@@ -49,7 +49,7 @@ class CreateOrdersRelativeTables extends Migration
      */
     public function down()
     {
-        Schema::drop('orders');
-        Schema::drop('order_details');
+        Schema::dropIfExists('order_details');
+        Schema::dropIfExists('orders');
     }
 }

@@ -1,9 +1,31 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models;
 
 class DatabaseSeeder extends Seeder
 {
+
+    protected $tables = [
+        'address',
+        'apartment',
+        'auth_codes',
+        'canteen',
+        'comments',
+        'delivery_times',
+        'dishes',
+        'orders',
+        'order_details',
+        'schools',
+        'shops',
+        'shop_users',
+        'supply_relationship',
+        'users',
+        'user_infos',
+        'wx_users',
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -11,6 +33,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+
+        foreach ($this->tables as $table) {
+            DB::table($table)->truncate();
+        }
+
+        factory(Models\School::class, 1)->create();
+        factory(Models\UserInfo::class, 10)->create();
+        factory(Models\Apartment::class, 5)->create();
+        factory(Models\Address::class, 15)->create();
+        factory(Models\Canteen::class, 5)->create();
+        factory(Models\ShopUser::class, 20)->create();
+        factory(Models\Dishes::class, 200)->create();
+        factory(Models\DeliveryTime::class, 3)->create();
+        factory(Models\SupplyRelationship::class, 20)->create();
+        factory(Models\Order::class, 100)->create()->each(function ($order) {
+            factory(Models\OrderDetail::class, 3)->create([
+                'order_id' => $order->id,
+            ])->each(function ($orderDetail) use ($order) {
+                $order->price += $orderDetail->price * $orderDetail->sum;
+            });
+            $order->save();
+        });
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+
+        $this->command->info('Test data inserted successfully!');
     }
 }

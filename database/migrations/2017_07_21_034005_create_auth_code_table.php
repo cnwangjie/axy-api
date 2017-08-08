@@ -20,7 +20,7 @@ class CreateAuthCodeTable extends Migration
             $table->char('code', 6)->comment('六位随机数字');
             $table->tinyInteger('is_used')->unsigned()->comment('是否被使用 0:未被使用 1:已使用');
             $table->timestamps();
-            
+
             $table->foreign('user_id')->references('id')->on('users');
         });
     }
@@ -32,6 +32,6 @@ class CreateAuthCodeTable extends Migration
      */
     public function down()
     {
-        Schema::drop('auth_codes');
+        Schema::dropIfExists('auth_codes');
     }
 }

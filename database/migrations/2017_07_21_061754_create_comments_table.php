@@ -21,7 +21,7 @@ class CreateCommentsTable extends Migration
             $table->integer('shop_id')->unsigned()->comment('商家id');
             $table->string('reply', 255)->nullable()->comment('评论内容');
             $table->timestamps();
-            
+
         });
     }
 
@@ -32,6 +32,6 @@ class CreateCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('comments');
+        Schema::dropIfExists('comments');
     }
 }
