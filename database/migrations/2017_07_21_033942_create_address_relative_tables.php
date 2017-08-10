@@ -24,12 +24,12 @@ class CreateAddressRelativeTables extends Migration
 
         Schema::create('address', function (Blueprint $table) {
             $table->increments('id')->comment('地址id');
-            $table->integer('user_id')->unsigned()->comment('用户id');
+            $table->integer('custemer_id')->unsigned()->comment('顾客id');
             $table->integer('apartment')->unsigned()->comment('公寓楼id');
             $table->string('room', 30)->comment('房间号');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('custemer_id')->references('id')->on('custemers');
             $table->foreign('apartment')->references('id')->on('apartment');
         });
     }

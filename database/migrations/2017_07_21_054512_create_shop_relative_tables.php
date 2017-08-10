@@ -23,11 +23,13 @@ class CreateShopRelativeTables extends Migration
 
         Schema::create('shops', function (Blueprint $table) {
             $table->increments('id')->comment('商家id');
+            $table->integer('user_id')->unsigned()->comment('用户id');
             $table->string('name', 30)->comment('商家名称');
-            $table->tinyInteger('status')->unsigned()->default(0)->comment('商家状态 0:正常供应 1:停止供应');
+            $table->tinyInteger('status')->unsigned()->default(0)->comment('商家状态 0:正常供应 1:停止供应 2:未激活');
             $table->integer('canteen_id')->unsigned()->comment('商家所在餐厅id');
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('canteen_id')->references('id')->on('canteen');
         });
 

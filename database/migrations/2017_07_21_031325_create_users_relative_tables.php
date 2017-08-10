@@ -16,10 +16,11 @@ class CreateUsersRelativeTables extends Migration
             $table->increments('id')->comment('用户id');
             $table->string('tel', 15)->comment('手机号');
             $table->string('password', 100)->nullable()->comment('密码');
+            $table->tinyInteger('role')->unsigned()->comment('身份 0:顾客 1:商家');
             $table->timestamps();
         });
 
-        Schema::create('user_infos', function (Blueprint $table) {
+        Schema::create('custemers', function (Blueprint $table) {
             $table->integer('id')->unsigned()->comment('用户id');
             $table->string('name', 10)->nullable()->comment('称呼');
             $table->string('sid', 30)->nullable()->comment('学号');
@@ -48,7 +49,7 @@ class CreateUsersRelativeTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_infos');
+        Schema::dropIfExists('custemers');
         Schema::dropIfExists('wx_users');
         Schema::dropIfExists('users');
     }

@@ -19,10 +19,9 @@ class DatabaseSeeder extends Seeder
         'order_details',
         'schools',
         'shops',
-        'shop_users',
         'supply_relationship',
         'users',
-        'user_infos',
+        'custemers',
         'wx_users',
     ];
 
@@ -33,6 +32,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+
         DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
 
         foreach ($this->tables as $table) {
@@ -40,11 +40,11 @@ class DatabaseSeeder extends Seeder
         }
 
         factory(Models\School::class, 1)->create();
-        factory(Models\UserInfo::class, 10)->create();
+        factory(Models\Custemer::class, 10)->create();
         factory(Models\Apartment::class, 5)->create();
         factory(Models\Address::class, 15)->create();
         factory(Models\Canteen::class, 5)->create();
-        factory(Models\ShopUser::class, 20)->create();
+        factory(Models\Shop::class, 20)->create();
         factory(Models\Dishes::class, 200)->create();
         factory(Models\DeliveryTime::class, 3)->create();
         factory(Models\SupplyRelationship::class, 20)->create();

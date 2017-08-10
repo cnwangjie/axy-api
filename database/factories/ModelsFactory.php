@@ -15,7 +15,7 @@ use App\Models;
 
 $factory->define(Models\Address::class, function (Faker\Generator $faker) {
     return [
-        'user_id' => Models\User::all()->random()->id,
+        'custemer_id' => Models\Custemer::all()->random()->id,
         'apartment' => Models\Apartment::all()->random()->id,
         'room' => $faker->numerify('####'),
     ];
@@ -95,23 +95,16 @@ $factory->define(Models\School::class, function (Faker\Generator $faker) {
 
 $factory->define(Models\Shop::class, function (Faker\Generator $faker) {
     return [
+        'user_id' => function() {
+            return factory(Models\User::class)->create([
+                'role' => 1,
+            ])->id;
+        },
         'name' => $faker->name,
-        'status' => $faker->numberBetween(0, 1),
+        'status' => $faker->numberBetween(0, 2),
         'canteen_id' => Models\Canteen::all()->random()->id,
     ];
 });
-
-$factory->define(Models\ShopUser::class, function (Faker\Generator $faker) {
-    return [
-        'id' => function() {
-            return factory(Models\Shop::class)->create()->id;
-        },
-        'tel' => $faker->e164PhoneNumber,
-        'password' => bcrypt('123456'),
-        'status' => $faker->numberBetween(0, 1),
-    ];
-});
-
 
 $factory->define(Models\SupplyRelationship::class, function (Faker\Generator $faker) {
     return [
@@ -122,15 +115,17 @@ $factory->define(Models\SupplyRelationship::class, function (Faker\Generator $fa
 
 $factory->define(Models\User::class, function (Faker\Generator $faker) {
     return [
-        'tel' => $faker->e164PhoneNumber,
-        'password' => bcrypt('password'),
+        'tel' => Faker\Factory::create('zh_CN')->phoneNumber,
+        'password' => bcrypt('123456'),
     ];
 });
 
-$factory->define(Models\UserInfo::class, function (Faker\Generator $faker) {
+$factory->define(Models\Custemer::class, function (Faker\Generator $faker) {
     return [
        'id' => function() {
-           return factory(Models\User::class)->create()->id;
+           return factory(Models\User::class)->create([
+               'role' => 0,
+           ])->id;
        },
        'name' => Faker\Factory::create('zh_CN')->name,
        'sid' => $faker->numerify('########'),
