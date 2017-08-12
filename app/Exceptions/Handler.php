@@ -36,6 +36,13 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        if ($exception instanceof HttpException)
+            return response()->json([
+                'status' => 'error',
+                'error' => $exception->getMessage(),
+                'msg' => $exception->getMessage(), // 之后会做i18n
+            ], $exception->getStatusCode());
+
         parent::report($exception);
     }
 
