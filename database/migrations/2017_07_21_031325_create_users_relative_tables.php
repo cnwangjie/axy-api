@@ -23,6 +23,7 @@ class CreateUsersRelativeTables extends Migration
         Schema::create('custemers', function (Blueprint $table) {
             $table->integer('id')->unsigned()->comment('用户id');
             $table->string('name', 10)->nullable()->comment('称呼');
+            $table->tinyInteger('gender')->comment('性别 0:男 1:女');
             $table->string('sid', 30)->nullable()->comment('学号');
             $table->integer('school')->unsigned()->comment('学校id');
             $table->timestamps();

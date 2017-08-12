@@ -27,6 +27,7 @@ class CreateShopRelativeTables extends Migration
             $table->string('name', 30)->comment('商家名称');
             $table->tinyInteger('status')->unsigned()->default(0)->comment('商家状态 0:正常供应 1:停止供应 2:未激活');
             $table->integer('canteen_id')->unsigned()->comment('商家所在餐厅id');
+            $table->tinyInteger('floor')->unsigned()->comment('商家所在餐厅楼层');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

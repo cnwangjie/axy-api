@@ -49,7 +49,9 @@ $factory->define(Models\Comment::class, function (Faker\Generator $faker) {
 
 $factory->define(Models\DeliveryTime::class, function (Faker\Generator $faker) {
     return [
-        'time' => $faker->numerify('##:##-##:##'),
+        'date' => date('Y/m/d'),
+        'time' => date('H:i') . '-' . date('H:i', time() + 900),
+        'status' => $faker->numberBetween(0, 3),
     ];
 });
 
@@ -66,13 +68,15 @@ $factory->define(Models\Dishes::class, function (Faker\Generator $faker) {
 
 $factory->define(Models\Order::class, function (Faker\Generator $faker) {
     return [
-        'code' => $faker->numerify('##########'),
+        'code' => strtoupper(substr($faker->md5, 0, 30)),
         'price' => 0,
         'user_id' => Models\User::all()->random()->id,
+        'ip' => $faker->ipv4,
         'address' => $faker->address,
         'provider' => Models\Shop::all()->random()->id,
-        'status' => $faker->numberBetween(1, 5),
-        'delivery_time_id' => Models\DeliveryTime::all()->random()->id,
+        'status' => $faker->randomElement([0, 1, 41, 3, 42, 43, 44, 40]),
+        'delivery_date' => Models\DeliveryTime::all()->random()->date,
+        'delivery_time' => Models\DeliveryTime::all()->random()->time,
         'remark' => $faker->text(20),
     ];
 });
@@ -103,6 +107,7 @@ $factory->define(Models\Shop::class, function (Faker\Generator $faker) {
         'name' => $faker->name,
         'status' => $faker->numberBetween(0, 2),
         'canteen_id' => Models\Canteen::all()->random()->id,
+        'floor' => $faker->numberBetween(1, 3),
     ];
 });
 
@@ -122,13 +127,14 @@ $factory->define(Models\User::class, function (Faker\Generator $faker) {
 
 $factory->define(Models\Custemer::class, function (Faker\Generator $faker) {
     return [
-       'id' => function() {
+        'id' => function() {
            return factory(Models\User::class)->create([
                'role' => 0,
            ])->id;
-       },
-       'name' => Faker\Factory::create('zh_CN')->name,
-       'sid' => $faker->numerify('########'),
-       'school' => Models\School::all()->random()->id,
+        },
+        'name' => Faker\Factory::create('zh_CN')->name,
+        'gender' => $faker->numberBetween(0, 1),
+        'sid' => $faker->numerify('########'),
+        'school' => Models\School::all()->random()->id,
     ];
 });
