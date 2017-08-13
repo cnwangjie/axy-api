@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Shop;
 use JWTAuth;
 use JWTFactory;
+use DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -18,13 +19,14 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class AuthController extends Controller
 {
     /**
-     * @api {post} /api/auth/shop/register 商家注册
+     * @api {post} /auth/shop/register 商家注册
      * @apiVersion 0.0.1
      * @apiGroup auth
      * @apiParam {string} tel 手机号
      * @apiParam {String} password 密码
      * @apiParam {String} name 商家名称
      * @apiParam {Number} canteen_id 所属餐厅 id
+     * @apiParam {Number} floor 餐厅所在楼层
      *
      * @apiSuccess {String} status 状态
      * @apiSuccess {Object} shop 商家信息
@@ -37,6 +39,7 @@ class AuthController extends Controller
             'password' => 'required|string',
             'name' => 'required|string',
             'canteen_id' => 'required|integer|exists:canteen,id',
+            'floor' => 'required|integer|max:10',
         ]);
 
         if ($validator->fails())
@@ -55,6 +58,7 @@ class AuthController extends Controller
         $shop->user_id = $user->id;
         $shop->name = $request->name;
         $shop->status = 2;
+        $shop->floor = $request->floor;
         $shop->canteen_id = $request->canteen_id;
         $shop->save();
 
@@ -65,7 +69,7 @@ class AuthController extends Controller
     }
 
     /**
-     * @api {post} /api/auth/shop/login 商家登陆
+     * @api {post} /auth/shop/login 商家登陆
      * @apiVersion 0.0.1
      * @apiGroup auth
      * @apiParam {string} tel 手机号

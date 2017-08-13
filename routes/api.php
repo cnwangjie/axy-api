@@ -15,16 +15,21 @@ use Illuminate\Http\Request;
 
 Route::post('auth/shop/register', 'AuthController@shopRegister');
 Route::post('auth/shop/login', 'AuthController@shopLogin');
-Route::get('shop/{id}', 'ShopController@index');
-Route::get('shop/{id}/dishes', 'ShopController@dishes');
 
 Route::group([
-    'middleware' => 'jwt.auth',
-    'providers' => 'jwt'
-], function() {
-    Route::get('shop/{id}/orders', 'ShopController@orders');
-    Route::post('shop/{id}/dishes/add', 'ShopController@addDishes');
-    Route::post('shop/{id}/status/set', 'ShopController@changeStatus');
-    Route::post('dishes/{id}/set', 'DishesController@change');
-    Route::post('dishes/{id}/status/set', 'DishesController@changeStatus');
+    'prefix' => 'api',
+], function () {
+    Route::get('shop/{id}', 'ShopController@index');
+    Route::get('shop/{id}/dishes', 'ShopController@dishes');
+
+    Route::group([
+        'middleware' => 'jwt.auth',
+        'providers' => 'jwt'
+    ], function () {
+        Route::get('api/shop/{id}/orders', 'ShopController@orders');
+        Route::post('shop/{id}/dishes/add', 'ShopController@addDishes');
+        Route::post('shop/{id}/status/set', 'ShopController@changeStatus');
+        Route::post('dishes/{id}/set', 'DishesController@change');
+        Route::post('dishes/{id}/status/set', 'DishesController@changeStatus');
+    });
 });
