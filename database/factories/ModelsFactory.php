@@ -74,7 +74,7 @@ $factory->define(Models\Order::class, function (Faker\Generator $faker) {
         'ip' => $faker->ipv4,
         'address' => $faker->address,
         'provider' => Models\Shop::all()->random()->id,
-        'status' => $faker->randomElement([0, 1, 41, 3, 42, 43, 44, 40]),
+        'status' => $faker->randomElement([0, 1, 41, 3, 42, 43, 44, 20]),
         'delivery_date' => Models\DeliveryTime::all()->random()->date,
         'delivery_time' => Models\DeliveryTime::all()->random()->time,
         'remark' => $faker->text(20),

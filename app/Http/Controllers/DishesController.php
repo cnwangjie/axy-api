@@ -15,6 +15,30 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class DishesController extends Controller
 {
+
+
+    /**
+     * @api {get} /api/dishes/:id 获取菜品信息
+     * @apiVersion 0.0.1
+     * @apiGroup dishes
+     * @apiParam {Number} id 菜品id
+     *
+     * @apiSuccess {Number} id 菜品id
+     * @apiSuccess {String} name 名称
+     * @apiSuccess {String} description 介绍
+     * @apiSuccess {String} img 图片地址
+     * @apiSuccess {Number} status 状态
+     * @apiSuccess {Number} provider 供应商家id
+     * @apiSuccess {Number} price 价格(单位人名币分)
+     * @apiSuccess {String} created_at 创建时间
+     * @apiSuccess {String} updated_at 修改时间
+     *
+     */
+    public function index(Request $request)
+    {
+        return Dishes::find($request->id);
+    }
+
     /**
      * @api {post} /api/dishes/:id/set 修改菜品信息
      * @apiVersion 0.0.1
@@ -70,7 +94,7 @@ class DishesController extends Controller
     }
 
     /**
-     * @api {post} /api/dishes/:id/set 修改菜品信息
+     * @api {post} /api/dishes/:id/status/set 修改菜品状态
      * @apiVersion 0.0.1
      * @apiGroup dishes
      * @apiHeader Authorization JWT token

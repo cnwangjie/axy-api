@@ -198,4 +198,37 @@ class ShopController extends Controller
             'current_status' => $shop->status,
         ], 200);
     }
+
+    /**
+     * @api {get} /api/shop/:id/amount 完成订单总额
+     * @apiVersion 0.0.1
+     * @apiGroup shop
+     * @apiHeader Authorization JWT token
+     * @apiParam {Number} id 商家id
+     *
+     * @apiSuccess {Number} id 商家id
+     * @apiSuccess {Number} count 完成订单总数
+     * @apiSuccess {Number} amount 完成订单总额
+     */
+    public function sellAmount(Request $request)
+    {
+        $id = $request->id;
+        $tokenUserId = JWTAuth::parseToken()->authenticate()->id;
+        $shop = Shop::where('user_id', $tokenUserId)->first();
+        if ($shop->id != $id) {
+            throw new HttpException(401, 'NOT_ALLOWED');
+        }
+
+        $orders = Order::where('provider', $id)
+            ->where('status', Order::COMPLETED)
+            ->get();
+
+        $data = [
+            'shop' => intval($id),
+            'count' => $orders->count(),
+            'amount' => $orders->pluck('price')->sum(),
+        ];
+
+        return response()->json($data, 200);
+    }
 }

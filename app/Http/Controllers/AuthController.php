@@ -11,6 +11,7 @@ use JWTAuth;
 use JWTFactory;
 use DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\HttpKernel;
 
 /**
  *  @apiDefine auth 认证
@@ -48,19 +49,29 @@ class AuthController extends Controller
         if (User::where('tel', $request->tel)->first())
             throw new HttpException(200, 'USER_ALREADY_EXISTS');
 
-        $user = new User;
-        $user->tel = $request->tel;
-        $user->password = bcrypt($request->password);
-        $user->role = 1;
-        $user->save();
+        DB::beginTransaction();
 
-        $shop = new Shop;
-        $shop->user_id = $user->id;
-        $shop->name = $request->name;
-        $shop->status = 2;
-        $shop->floor = $request->floor;
-        $shop->canteen_id = $request->canteen_id;
-        $shop->save();
+        try {
+            $user = new User;
+            $user->tel = $request->tel;
+            $user->password = bcrypt($request->password);
+            $user->role = 1;
+            $user->save();
+
+            $shop = new Shop;
+            $shop->user_id = $user->id;
+            $shop->name = $request->name;
+            $shop->status = 2;
+            $shop->floor = $request->floor;
+            $shop->canteen_id = $request->canteen_id;
+            $shop->save();
+
+            DB::commit();
+        } catch (\Exception $exception) {
+
+            DB::rollBack();
+            return new HttpException(500, 'DATABASE_ERROR');
+        }
 
         return response()->json([
             'status' => 'success',
