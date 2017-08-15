@@ -47,37 +47,44 @@ class GenerateDeliveryTime extends Command
      */
     public function handle()
     {
+        // 检查过期
         DeliveryTime::where('status', 0)->get()->each(function ($item, $key) {
             $date = $item->date;
-            $time = $item->time;
+            $expireTime = $item->expire;
             $dt = Carbon::createFromFormat('Y/m/d H:i+', $date . ' ' . $time, 'Asia/Shanghai');
-            if ($dt->subSecond($this->config->reserve_ahead_secs)->lessThan(Carbon::now())) {
+            if ($expireTime->lessThan(Carbon::now())) {
                 $item->status = 1;
                 $item->save();
-                $this->line("<info>{$date} {$time}</info> 已经过期");
+                $this->line("<info>{$date} {$item->time}</info> 已经过期");
             }
         });
 
-        $times = DeliveryTimePlan::getTime();
-
+        // 生成计划
+        $plans = DeliveryTimePlan::all();
         foreach (range(0, $this->config->reserve_ahead_days) as $daynum) {
+
             $date = Carbon::now()->addDay($daynum)->format('Y/m/d');
-            $dts = DeliveryTime::where('date', $date)->get();
-            foreach ($times as $time) {
-                $curdt = $dts->where('time', $time)->first();
-                if (!$curdt) {
+
+            $thisDateTables = DeliveryTime::where('date', $date)->get();
+
+            foreach ($plans as $plan) {
+
+                $curDateColumn = $thisDateTables->where('time', $plan->time)->first();
+
+                if (!$curDateColumn) {
                     $newdt = new DeliveryTime;
                     $newdt->date = $date;
-                    $newdt->time = $time;
+                    $newdt->time = $plan->time;
+                    $newdt->expire = $plan->expire;
                     $newdt->status = 0;
                     $newdt->save();
-                    $this->line("<info>{$date} {$time}</info> 创建成功");
-                } else if ($curdt->status === 2) {
-                    $curdt->status = 0;
-                    $curdt->save();
-                    $this->line("<info>{$date} {$time}</info> 开启成功");
+                    $this->line("<info>{$date} {$plan->time}</info> 创建成功");
+                } else if ($curDateColumn->status === DeliveryTime::NOT_START) {
+                    $curDateColumn->status = DeliveryTime::AVAILABLE;
+                    $curDateColumn->save();
+                    $this->line("<info>{$date} {$plan->time}</info> 开启成功");
                 } else {
-                    $this->line("<info>{$date} {$time}</info> 已经存在");
+                    $this->line("<info>{$date} {$plan->time}</info> 已经存在");
                 }
             }
         }

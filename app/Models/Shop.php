@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
 {
+    public function user()
+    {
+        return $this->hasOne(User::class, 'user_id', 'id');
+    }
+
     public function canteen()
     {
         return $this->belongsTo(Canteen::class, 'canteen_id', 'id');

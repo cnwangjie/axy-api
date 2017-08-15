@@ -15,9 +15,10 @@ class CreateConfigTable extends Migration
     public function up()
     {
         Schema::create('config', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('key')->comment('配置字段名');
-            $table->string('value')->comment('配置值');
+            $table->string('key', 127)->comment('配置字段名');
+            $table->string('value', 127)->comment('配置值');
+
+            $table->primary('key');
         });
 
         DB::table('config')->insert([

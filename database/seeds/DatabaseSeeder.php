@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use App\Models;
 
@@ -46,7 +47,7 @@ class DatabaseSeeder extends Seeder
         factory(Models\Canteen::class, 5)->create();
         factory(Models\Shop::class, 20)->create();
         factory(Models\Dishes::class, 200)->create();
-        factory(Models\DeliveryTime::class, 3)->create();
+        Artisan::call('task:time');
         factory(Models\SupplyRelationship::class, 20)->create();
         factory(Models\Order::class, 100)->create()->each(function ($order) {
             factory(Models\OrderDetail::class, 3)->create([
