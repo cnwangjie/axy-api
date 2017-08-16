@@ -28,6 +28,7 @@ class ShopController extends Controller
      * @apiSuccess {Number} id 商家id
      * @apiSuccess {Number} user_id 用户id
      * @apiSuccess {String} name 商家名称
+     * @apiSuccess {String} img 图片地址
      * @apiSuccess {Number} status 商家状态
      * @apiSuccess {Number} canteen_id 商家所在餐厅id
      * @apiSuccess {Number} floor 商家所在餐厅楼层

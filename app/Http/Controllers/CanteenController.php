@@ -22,7 +22,7 @@ class CanteenController extends Controller
      *
      * @apiSuccess {Object[]} canteens 餐厅数组
      * @apiSuccess {Number} canteens.id 餐厅id
-     * @apiSuccess {String} canteens.name 餐厅名称
+     * @apiSuccess {String} canteens.name 餐厅名称`
      * @apiSuccess {Number} canteens.school 所在学校id
      * @apiSuccess {String} canteens.created_at 创建时间
      * @apiSuccess {String} canteens.updated_at 修改时间
@@ -63,6 +63,7 @@ class CanteenController extends Controller
      * @apiSuccess {Number} id 商家id
      * @apiSuccess {Number} user_id 商家用户id
      * @apiSuccess {String} name 商家名称
+     * @apiSuccess {String} img 图片地址
      * @apiSuccess {Number} status 商家状态
      * @apiSuccess {Number} canteen_id 商家所在餐厅id
      * @apiSuccess {Number} floor 商家所在餐厅楼层
