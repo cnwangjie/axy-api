@@ -15,6 +15,10 @@ use Illuminate\Http\Request;
 
 Route::post('auth/shop/register', 'AuthController@shopRegister');
 Route::post('auth/shop/login', 'AuthController@shopLogin');
+Route::get('auth/sms', 'AuthController@getSMS');
+Route::post('auth/custemer/register', 'AuthController@custemerRegister');
+Route::post('auth/custemer/login/password', 'AuthController@custemerPasswordLogin');
+Route::post('auth/custemer/login/sms', 'AuthController@custemerSMSLogim');
 
 Route::group([
     'prefix' => 'api',

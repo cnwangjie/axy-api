@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
         factory(Models\Shop::class, 20)->create();
         factory(Models\Dishes::class, 200)->create();
         Artisan::call('task:time');
+        factory(Models\AuthCode::class, 30)->create();
         factory(Models\SupplyRelationship::class, 20)->create();
         factory(Models\Order::class, 100)->create()->each(function ($order) {
             factory(Models\OrderDetail::class, 3)->create([

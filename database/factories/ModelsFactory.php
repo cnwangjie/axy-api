@@ -29,6 +29,16 @@ $factory->define(Models\Apartment::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(Models\AuthCode::class, function (Faker\Generator $faker) {
+    return [
+        'tel' => Faker\Factory::create('zh_CN')->phoneNumber,
+        'type' => 0,
+        'usage' => $faker->randomElement([0, 1, 2, 3]),
+        'code' => $faker->numerify('######'),
+        'is_used' => $faker->randomElement([0, 1, 2]),
+    ];
+});
+
 $factory->define(Models\Canteen::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,

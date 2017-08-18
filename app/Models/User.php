@@ -15,6 +15,9 @@ class User extends Model implements JWTSubject, AuthenticatableContract, CanRese
 
     protected $hidden = ['password'];
 
+    const SHOP = 1
+        , CUSTEMER = 0;
+
     /**
      * @return mixed
      */

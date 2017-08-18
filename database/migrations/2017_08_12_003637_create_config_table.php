@@ -26,6 +26,7 @@ class CreateConfigTable extends Migration
             ['key' => 'reserve_ahead_days', 'value' => '2'],
             ['key' => 'reserve_ahead_secs', 'value' => '7200'],
             ['key' => 'pay_timeout_secs', 'value' => '600'],
+            ['key' => 'auth_code_timeout_secs', 'value' => '1800'],
         ]);
     }
 
