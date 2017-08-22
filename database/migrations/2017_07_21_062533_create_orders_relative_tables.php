@@ -14,7 +14,7 @@ class CreateOrdersRelativeTables extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id')->comment('订单id');
-            $table->string('code')->comment('订单编号');
+            $table->string('code', 30)->comment('订单编号');
             $table->integer('price')->unsigned()->comment('订单金额 (单位人民币分)');
             $table->integer('user_id')->unsigned()->comment('用户id');
             $table->ipAddress('ip')->comment('客户端ip');

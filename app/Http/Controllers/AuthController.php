@@ -127,10 +127,59 @@ class AuthController extends Controller
     }
 
     /**
+     * @api {get} /auth/password/change 修改密码
+     * @apiVersion 0.0.1
+     * @apiGroup auth
+     * @apiParam {String} tel 手机号
+     * @apiParam {String} password 新密码
+     * @apiParam {String} code 验证码
+     *
+     * @apiParam {String} status 状态
+     * @apiParam {String} tel 手机号
+     */
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'tel' => 'required|string',
+            'password' => 'required|string',
+            'code' => 'required|string',
+        ]);
+
+        if ($validator->fails())
+            throw new HttpException(400, 'BAD_REQUEST');
+
+        $user = User::where('tel', $request->tel)->first();
+
+        if (!isset($user)) {
+            throw new HttpException(404, 'USER_NOT_EXISTS');
+        }
+
+        $authCode = AuthCode::where('tel', $request->tel)
+            ->where('usage', AuthCode::CHANGE_PASSWORD)
+            ->where('is_used', AuthCode::UNUSED)
+            ->first();
+
+        if (!isset($authCode)) {
+            throw new HttpException(403, 'WRONG_AUTH_CODE');
+        }
+
+        $authCode->is_used = AuthCode::USED;
+        $authCode->save();
+
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'tel' => $request->tel,
+        ], 200);
+    }
+
+    /**
      * @api {get} /auth/sms 获取验证码短信
      * @apiVersion 0.0.1
      * @apiGroup auth
-     * @apiParam {string} tel 手机号
+     * @apiParam {String} tel 手机号
      * @apiParam {Number} usage 用途
      *
      * @apiSuccess {String} status 状态
@@ -170,6 +219,7 @@ class AuthController extends Controller
         $authCode->type = AuthCode::SMS;
         $authCode->usage = $usage;
         $authCode->code = str_pad(rand(0, 999999), 6, 0, STR_PAD_LEFT);
+        $authCode->is_used = AuthCode::UNUSED;
         $authCode->tel = $tel;
 
         $yunpianClient = YunpianClient::create(env('YUNPIAN_APIKEY'));
@@ -353,5 +403,24 @@ class AuthController extends Controller
             'shop' => $custemer->toArray(),
             'token' => JWTAuth::fromUser($user),
         ]);
+    }
+
+    /**
+     * @api {get} /auth/token/refresh 更新令牌
+     * @apiVersion 0.0.1
+     * @apiGroup auth
+     * @apiHeader Authorization JWT token
+     *
+     * @apiSuccess {String} status 状态
+     * @apiSuccess {String} token 新的token
+     */
+    public function refreshToken(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        return response()->json([
+            'status' => 'success',
+            'token' => $token,
+        ], 200);
     }
 }

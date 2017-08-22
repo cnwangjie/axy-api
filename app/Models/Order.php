@@ -11,6 +11,8 @@ class Order extends Model
 
     protected $appends = ['detail'];
 
+    protected $hidden = ['id', 'ip'];
+
     const INIT = 0                  // 初始状态
         , WAITING_FOR_PAY = 1       // 等待支付
         , INTERNAL_ERROR = 41       // 请求远程api错误

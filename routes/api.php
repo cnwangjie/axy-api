@@ -19,6 +19,7 @@ Route::get('auth/sms', 'AuthController@getSMS');
 Route::post('auth/custemer/register', 'AuthController@custemerRegister');
 Route::post('auth/custemer/login/password', 'AuthController@custemerPasswordLogin');
 Route::post('auth/custemer/login/sms', 'AuthController@custemerSMSLogim');
+Route::get('auth/token/refresh', 'AuthController@refreshToken')->middleware('refresh');
 
 Route::group([
     'prefix' => 'api',
@@ -32,14 +33,20 @@ Route::group([
 
     Route::get('school', 'SchoolController@all');
 
+    Route::get('dishes/{id}', 'DishesController@index');
+
     Route::group([
-        'middleware' => 'jwt.auth',
+        'middleware' => ['jwt.auth'],
         'providers' => 'jwt'
     ], function () {
         Route::get('shop/{id}/orders', 'ShopController@orders');
         Route::post('shop/{id}/dishes/add', 'ShopController@addDishes');
         Route::post('shop/{id}/status/set', 'ShopController@changeStatus');
         Route::get('shop/{id}/amount', 'ShopController@sellAmount');
+
+        Route::get('custemer/{id}/orders', 'CustemerController@orders');
+
+        Route::get('order/{code}', 'OrderController@indexByCode');
 
         Route::post('dishes/{id}/set', 'DishesController@change');
         Route::post('dishes/{id}/status/set', 'DishesController@changeStatus');
