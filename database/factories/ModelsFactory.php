@@ -115,7 +115,7 @@ $factory->define(Models\Shop::class, function (Faker\Generator $faker) {
             ])->id;
         },
         'name' => $faker->name,
-        'img' => $faker->imageUrl(400, 400, 'food'),
+        'img' => $faker->imageUrl(400, 400, 'city'),
         'status' => $faker->numberBetween(0, 2),
         'canteen_id' => Models\Canteen::all()->random()->id,
         'floor' => $faker->numberBetween(1, 3),
