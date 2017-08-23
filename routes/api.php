@@ -20,6 +20,7 @@ Route::post('auth/custemer/register', 'AuthController@custemerRegister');
 Route::post('auth/custemer/login/password', 'AuthController@custemerPasswordLogin');
 Route::post('auth/custemer/login/sms', 'AuthController@custemerSMSLogim');
 Route::get('auth/token/refresh', 'AuthController@refreshToken')->middleware('refresh');
+Route::post('auth/password/change', 'AuthController@changePassword');
 
 Route::group([
     'prefix' => 'api',

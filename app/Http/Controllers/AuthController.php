@@ -127,7 +127,7 @@ class AuthController extends Controller
     }
 
     /**
-     * @api {get} /auth/password/change 修改密码
+     * @api {post} /auth/password/change 修改密码
      * @apiVersion 0.0.1
      * @apiGroup auth
      * @apiParam {String} tel 手机号
