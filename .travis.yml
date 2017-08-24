@@ -34,13 +34,6 @@ after_success:
  - npm install apidoc --global
  - apidoc
  - sshpass -p $DOC_UPLOAD_PASSWORD scp ./doc/api_data.js root@www.cnwangjie.com:/var/www/html/axy-api-doc/api_data.js
-
-defore_deploy:
-  - echo "$DEPLOY_KEY" > key.pem
-  - chmod 600 key.pem
-
-deploy:
-  - provider: script
-    script: sshpass -p '' -P passphrase ssh -i key.pem root@axy-api.cnwangjie.com '/root/deploy.sh'
-    on:
-      branch: api-dev
+ - echo -e "$DEPLOY_KEY" > key.pem
+ - chmod 600 key.pem
+ - ssh -i key.pem root@axy-api.cnwangjie.com '/root/deploy.sh'
