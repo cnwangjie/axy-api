@@ -36,6 +36,9 @@ Route::group([
 
     Route::get('dishes/{id}', 'DishesController@index');
 
+    Route::get('apartment/{id}/canteen', 'ApartmentController@beSuppliedCanteen');
+    Route::get('apartment/{id}/shop', 'ApartmentController@beSuppliedShop');
+
     Route::group([
         'middleware' => ['jwt.auth'],
         'providers' => 'jwt'
@@ -46,6 +49,8 @@ Route::group([
         Route::get('shop/{id}/amount', 'ShopController@sellAmount');
 
         Route::get('custemer/{id}/orders', 'CustemerController@orders');
+        Route::get('custemer/{id}/address', 'CustemerController@getAddress');
+        Route::post('custemer/{id}/address', 'CustemerController@setAddress');
 
         Route::get('order/{code}', 'OrderController@indexByCode');
 

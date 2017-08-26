@@ -28,7 +28,7 @@ class AuthController extends Controller
      * @api {post} /auth/shop/register 商家注册
      * @apiVersion 0.0.1
      * @apiGroup auth
-     * @apiParam {string} tel 手机号
+     * @apiParam {String} tel 手机号
      * @apiParam {String} password 密码
      * @apiParam {String} name 商家名称
      * @apiParam {Number} canteen_id 所属餐厅 id
@@ -36,6 +36,7 @@ class AuthController extends Controller
      *
      * @apiSuccess {String} status 状态
      * @apiSuccess {Object} shop 商家信息
+     * @apiSuccess {String} token JWTtoken
      *
      */
     public function shopRegister(Request $request)
@@ -81,6 +82,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'shop' => $shop->toArray(),
+            'token' => JWTAuth::fromUser($user),
         ]);
     }
 
@@ -88,7 +90,7 @@ class AuthController extends Controller
      * @api {post} /auth/shop/login 商家登陆
      * @apiVersion 0.0.1
      * @apiGroup auth
-     * @apiParam {string} tel 手机号
+     * @apiParam {String} tel 手机号
      * @apiParam {String} password 密码
      *
      * @apiSuccess {String} status 状态
@@ -244,7 +246,7 @@ class AuthController extends Controller
      * @api {post} /auth/custemer/register 顾客注册
      * @apiVersion 0.0.1
      * @apiGroup auth
-     * @apiParam {string} tel 手机号
+     * @apiParam {String} tel 手机号
      * @apiParam {String} password 密码
      * @apiParam {String} code 验证码
      * @apiParam {String} name 称呼
@@ -253,6 +255,7 @@ class AuthController extends Controller
      *
      * @apiSuccess {String} status 状态
      * @apiSuccess {Object} custemer 用户对象
+     * @apiSuccess {String} token JWTtoken
      */
     public function custemerRegister(Request $request)
     {
@@ -309,6 +312,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'custemer' => $custemer->toArray(),
+            'token' => JWTAuth::fromUser($user),
         ], 200);
     }
 
@@ -316,7 +320,7 @@ class AuthController extends Controller
      * @api {post} /auth/custemer/login/password 顾客登陆（使用密码）
      * @apiVersion 0.0.1
      * @apiGroup auth
-     * @apiParam {string} tel 手机号
+     * @apiParam {String} tel 手机号
      * @apiParam {String} password 密码
      *
      * @apiSuccess {String} status 状态
@@ -357,7 +361,7 @@ class AuthController extends Controller
      * @api {post} /auth/custemer/login/sms 顾客登陆（短信验证）
      * @apiVersion 0.0.1
      * @apiGroup auth
-     * @apiParam {string} tel 手机号
+     * @apiParam {String} tel 手机号
      * @apiParam {String} code 验证码
      *
      * @apiSuccess {String} status 状态

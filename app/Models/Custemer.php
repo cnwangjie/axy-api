@@ -10,4 +10,9 @@ class Custemer extends Model
     {
         return $this->belongsTo(User::class, 'id', 'id');
     }
+
+    public function address()
+    {
+        return $this->hasOne(Address::class, 'custemer_id', 'id');
+    }
 }

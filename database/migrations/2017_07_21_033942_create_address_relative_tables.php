@@ -19,7 +19,7 @@ class CreateAddressRelativeTables extends Migration
             $table->integer('school')->unsigned()->comment('学校id');
             $table->timestamps();
 
-            $table->foreign('school')->references('id')->on('schools')->onUpdate('cascade');
+            $table->foreign('school')->references('id')->on('schools');
         });
 
         Schema::create('address', function (Blueprint $table) {

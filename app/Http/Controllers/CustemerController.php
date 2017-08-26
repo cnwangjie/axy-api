@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Custemer;
-use Illuminate\Foundation\Testing\HttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Http\Request;
+use Validator;
+use JWTAuth;
 
 /**
  * @apiDefine custemer 顾客
@@ -57,5 +60,78 @@ class CustemerController extends Controller
 
         $orders = $orders->get();
         return $orders;
+    }
+
+    /**
+     * @api {get} /api/custemer/:id/address 获取用户地址
+     * @apiVersion 0.0.1
+     * @apiGroup custemer
+     * @apiParam {Number} id 用户id
+     *
+     * @apiSuccess {Number} custemer_id 用户id
+     * @apiSuccess {Number} apartment 公寓id
+     * @apiSuccess {String} room 房间号
+     * @apiSuccess {String} created_at 创建时间
+     * @apiSuccess {String} updated_at 修改时间
+     */
+    public function getAddress(Request $request)
+    {
+        $id = $request->id;
+        $tokenId = JWTAuth::parseToken()->authenticate()->id;
+        if ($id != $tokenId) {
+            throw new HttpException(401, 'NOT_ALLOWED');
+        }
+
+        $address = Custemer::find($id)->address;
+        if (is_null($address)) {
+            throw new HttpException(404, 'ADDRESS_NOT_SET');
+        }
+
+        return $address;
+    }
+
+    /**
+     * @api {post} /api/custemer/:id/address 设置用户地址
+     * @apiVersion 0.0.1
+     * @apiGroup custemer
+     * @apiParam {Number} id 用户id
+     * @apiParam {Number} apartment 公寓id
+     * @apiParam {String} room 房间号
+     *
+     * @apiParam {String} status 状态
+     * @apiParam {Object} address 地址
+     */
+    public function setAddress(Request $request)
+    {
+        $id = $request->id;
+        $tokenId = JWTAuth::parseToken()->authenticate()->id;
+        if ($id != $tokenId) {
+            throw new HttpException(401, 'NOT_ALLOWED');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'apartment' => 'required|integer|exists:apartment,id',
+            'room' => 'required|string|max:30',
+        ]);
+
+        if ($validator->fails())
+            throw new HttpException(400, 'BAD_REQUEST');
+
+
+        $custemer = Custemer::find($id);
+        $address = $custemer->address;
+        if (is_null($address)) {
+            $address = new Address;
+            $address->custemer_id = $id;
+        }
+
+        $address->apartment = $request->apartment;
+        $address->room = $request->room;
+        $address->save();
+
+        return response()->json([
+            'status' => 'success',
+            'address' => $address->toArray(),
+        ]);
     }
 }
