@@ -13,7 +13,6 @@ use App\Models\Shop;
 use JWTAuth;
 use JWTFactory;
 use DB;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Yunpian\Sdk\Constant\Code;
 use Yunpian\Sdk\YunpianClient;
@@ -49,11 +48,9 @@ class AuthController extends Controller
             'floor' => 'required|integer|max:10',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
-        if (User::where('tel', $request->tel)->first())
-            throw new HttpException(403, 'USER_ALREADY_EXISTS');
+        abort_if(User::where('tel', $request->tel)->first(), 403, 'USER_ALREADY_EXISTS');
 
         DB::beginTransaction();
 
@@ -105,19 +102,20 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
         $tel = $request->tel;
         $password = $request->password;
 
         $user = User::where('tel', $tel)->where('role', 1)->first();
 
-        if (!isset($user)) throw new HttpException(404, 'USER_NOT_EXISTS');
+        abort_if(!isset($user), 404, 'USER_NOT_EXISTS');
+
 
         $verified = Hash::check($password, $user->password);
 
-        if (!$verified) throw new HttpException(403, 'PASSWORD_ERROR');
+        abort_if(!$verified, 403, 'PASSWORD_ERROR');
+
 
         $shop = Shop::where('user_id', $user->id)->first();
 
@@ -147,23 +145,20 @@ class AuthController extends Controller
             'code' => 'required|string',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
         $user = User::where('tel', $request->tel)->first();
 
-        if (!isset($user)) {
-            throw new HttpException(404, 'USER_NOT_EXISTS');
-        }
+        abort_if(!isset($user), 404, 'USER_NOT_EXISTS');
+
 
         $authCode = AuthCode::where('tel', $request->tel)
             ->where('usage', AuthCode::CHANGE_PASSWORD)
             ->where('is_used', AuthCode::UNUSED)
             ->first();
 
-        if (!isset($authCode)) {
-            throw new HttpException(403, 'WRONG_AUTH_CODE');
-        }
+        abort_if(!isset($authCode), 403, 'WRONG_AUTH_CODE');
+
 
         $authCode->is_used = AuthCode::USED;
         $authCode->save();
@@ -195,17 +190,14 @@ class AuthController extends Controller
             'usage' => 'required|integer|in:0,1,2,3',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
         $tel = $request->tel;
         $usage = $request->usage;
 
         if ($usage === AuthCode::REGISTER) {
             $user = User::where('tel', $tel)->get();
-            if ($user) {
-                throw new HttpException(403, 'TEL_IS_USED');
-            }
+            abort_if($user, 403, 'TEL_IS_USED');
         }
 
         $hasSend = AuthCode::where('tel', $tel)
@@ -213,9 +205,7 @@ class AuthController extends Controller
             ->where('is_used', AuthCode::UNUSED)
             ->first();
 
-        if ($hasSend) {
-            throw new HttpException(403, 'HAS_SEND');
-        }
+        abort_if($hasSend, 403, 'HAS_SEND');
 
         $authCode = new AuthCode();
         $authCode->type = AuthCode::SMS;
@@ -230,9 +220,7 @@ class AuthController extends Controller
             YunpianClient::TEXT => "【小最软件】您的验证码是{$authCode->code}",
         ]);
 
-        if ($r->code() !== Code::OK) {
-            throw new HttpException(500, 'SMS_SEND_ERROR');
-        }
+        abort_if($r->code() !== Code::OK, 500, 'SMS_SEND_ERROR');
 
         $authCode->save();
         return response()->json([
@@ -268,8 +256,7 @@ class AuthController extends Controller
             'school' => 'required|integer|exists:school,id',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
         $tel = $request->tel;
 
@@ -279,9 +266,8 @@ class AuthController extends Controller
             ->where('is_used', AuthCode::UNUSED)
             ->first();
 
-        if (!isset($authCode)) {
-            throw new HttpException(403, 'WRONG_AUTH_CODE');
-        }
+        abort_if(!isset($authCode), 403, 'WRONG_AUTH_CODE');
+
 
         $authCode->is_used = AuthCode::USED;
         $authCode->save();
@@ -334,19 +320,18 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
         $tel = $request->tel;
         $password = $request->password;
 
         $user = User::where('tel', $tel)->where('role', User::CUSTEMER)->first();
 
-        if (!isset($user)) throw new HttpException(404, 'USER_NOT_EXISTS');
+        abort_if(!isset($user), 404, 'USER_NOT_EXISTS');
 
         $verified = Hash::check($password, $user->password);
 
-        if (!$verified) throw new HttpException(403, 'PASSWORD_ERROR');
+        abort_if(!$verified, 403, 'PASSWORD_ERROR');
 
         $custemer = Custemer::where('id', $user->id)->first();
 
@@ -375,17 +360,14 @@ class AuthController extends Controller
             'code' => 'required|string',
         ]);
 
-        if ($validator->fails())
-            throw new HttpException(400, 'BAD_REQUEST');
+        abort_if($validator->fails(), 400, 'BAD_REQUEST');
 
         $tel = $request->tel;
         $code = $request->code;
 
         $user = User::where('tel', $tel)->where('role', User::CUSTEMER)->first();
 
-        if (!isset($user)) {
-            throw new HttpException(403, 'USER_NOT_EXISTS');
-        }
+        abort_if(!isset($user), 403, 'USER_NOT_EXISTS');
 
         $authCode = AuthCode::where('tel', $request->tel)
             ->where('code', $request->code)
@@ -393,9 +375,7 @@ class AuthController extends Controller
             ->where('is_used', AuthCode::UNUSED)
             ->first();
 
-        if (!isset($authCode)) {
-            throw new HttpException(403, 'WRONG_AUTH_CODE');
-        }
+        abort_if(!isset($authCode), 403, 'WRONG_AUTH_CODE');
 
         $authCode->is_used = AuthCode::USED;
         $authCode->save();

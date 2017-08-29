@@ -18,6 +18,7 @@ class OrderController extends Controller
      * @api {get} /api/order/:code 单个订单详情
      * @apiVersion 0.0.1
      * @apiGroup order
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {String} code 订单编号
      *
@@ -38,17 +39,13 @@ class OrderController extends Controller
     {
         $order = Order::where('code', $request->code)->first();
 
-        if (!isset($order)) {
-            throw new HttpException(404, 'ORDER_NOT_EXISTS');
-        }
+        abort_if(!isset($order), 404, 'ORDER_NOT_EXISTS');
 
         $tokenId = $tokenId = JWTAuth::parseToken()->authenticate()->id;
 
         $shopId = Shop::where('user_id', $tokenId)->first()->id;
 
-        if ($order->user_id != $tokenId && $order->provider != $shopId) {
-            throw new HttpException(403, 'NOT_ALLOWED');
-        }
+        abort_if($order->user_id != $tokenId && $order->provider != $shopId, 403, 'NOT_ALLOWED');
 
         return response()->json($order->toArray(), 200);
     }

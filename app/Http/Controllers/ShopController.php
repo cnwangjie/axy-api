@@ -39,7 +39,8 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $shop = Shop::find($request->id);
-        if (!isset($shop)) throw new HttpException(404, 'SHOP_NOT_EXISTS');
+        abort_if(!isset($shop), 404, 'SHOP_NOT_EXISTS');
+
         return $shop;
     }
 
@@ -64,7 +65,8 @@ class ShopController extends Controller
     public function dishes(Request $request)
     {
         $shop = Shop::find($request->id);
-        if (!isset($shop)) throw new HttpException(404, 'SHOP_NOT_EXISTS');
+        abort_if(!isset($shop), 404, 'SHOP_NOT_EXISTS');
+
         return Dishes::where('provider', $request->id)->get();
     }
 
@@ -72,6 +74,7 @@ class ShopController extends Controller
      * @api {get} /api/shop/:id/orders 商家订单
      * @apiVersion 0.0.1
      * @apiGroup shop
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {Number} id 商家id
      * @apiParam {String} [since=0] 在此之后的订单 格式为 ISO 8601 时间戳: YYYY-MM-DDTHH:MM:SSZ.
@@ -84,9 +87,8 @@ class ShopController extends Controller
     {
         $id = $request->id;
         $shop = JWTAuth::parseToken()->authenticate()->id;
-        if (Shop::where('user_id', $shop)->value('id') != $id) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if(Shop::where('user_id', $shop)->value('id') != $id, 401, 'NOT_ALLOWED');
+
         $since = $request->since;
         $until = $request->until;
 
@@ -118,6 +120,7 @@ class ShopController extends Controller
      * @api {post} /api/shop/:id/dishes/add 添加菜品
      * @apiVersion 0.0.1
      * @apiGroup shop
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {Number} id 商家id
      * @apiParam {String} name 名称
@@ -140,9 +143,7 @@ class ShopController extends Controller
     {
         $id = $request->id;
         $shop = JWTAuth::parseToken()->authenticate()->id;
-        if (Shop::where('user_id', $shop)->value('id') != $id) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if(Shop::where('user_id', $shop)->value('id') != $id, 401, 'NOT_ALLOWED');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:30',
@@ -169,6 +170,7 @@ class ShopController extends Controller
     * @api {post} /api/shop/:id/status/set 设置商家状态
     * @apiVersion 0.0.1
     * @apiGroup shop
+    * @apiPermission owner
     * @apiHeader Authorization JWT token
     * @apiParam {Number} id 商家id
     * @apiParam {Number} status 新的状态
@@ -181,9 +183,7 @@ class ShopController extends Controller
         $id = $request->id;
         $tokenUserId = JWTAuth::parseToken()->authenticate()->id;
         $shop = Shop::where('user_id', $tokenUserId)->first();
-        if ($shop->id != $id) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if($shop->id != $id, 401, 'NOT_ALLOWED');
 
         $validator = Validator::make($request->all(), [
             'status' => 'required|integer|in:0,1',
@@ -204,6 +204,7 @@ class ShopController extends Controller
      * @api {get} /api/shop/:id/amount 完成订单总额
      * @apiVersion 0.0.1
      * @apiGroup shop
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {Number} id 商家id
      *
@@ -216,9 +217,7 @@ class ShopController extends Controller
         $id = $request->id;
         $tokenUserId = JWTAuth::parseToken()->authenticate()->id;
         $shop = Shop::where('user_id', $tokenUserId)->first();
-        if ($shop->id != $id) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if($shop->id != $id, 401, 'NOT_ALLOWED');
 
         $orders = Order::where('provider', $id)
             ->where('status', Order::COMPLETED)

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\Custemer;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Http\Request;
 use Validator;
 use JWTAuth;
@@ -19,6 +18,7 @@ class CustemerController extends Controller
      * @api {get} /api/custemer/:id/orders 用户订单
      * @apiVersion 0.0.1
      * @apiGroup custemer
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {Number} id 用户id
      * @apiParam {String} [since=0] 在此之后的订单 格式为 ISO 8601 时间戳: YYYY-MM-DDTHH:MM:SSZ.
@@ -31,9 +31,7 @@ class CustemerController extends Controller
     {
         $id = $request->id;
         $tokenId = JWTAuth::parseToken()->authenticate()->id;
-        if ($id != $tokenId) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if($id != $tokenId, 401, 'NOT_ALLOWED');
 
         $since = $request->since;
         $until = $request->until;
@@ -66,6 +64,8 @@ class CustemerController extends Controller
      * @api {get} /api/custemer/:id/address 获取用户地址
      * @apiVersion 0.0.1
      * @apiGroup custemer
+     * @apiPermission owner
+     * @apiHeader Authorization JWT token
      * @apiParam {Number} id 用户id
      *
      * @apiSuccess {Number} custemer_id 用户id
@@ -78,14 +78,10 @@ class CustemerController extends Controller
     {
         $id = $request->id;
         $tokenId = JWTAuth::parseToken()->authenticate()->id;
-        if ($id != $tokenId) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if($id != $tokenId, 401, 'NOT_ALLOWED');
 
         $address = Custemer::find($id)->address;
-        if (is_null($address)) {
-            throw new HttpException(404, 'ADDRESS_NOT_SET');
-        }
+        abort_if(is_null($address), 404, 'ADDRESS_NOT_SET');
 
         return $address;
     }
@@ -94,6 +90,8 @@ class CustemerController extends Controller
      * @api {post} /api/custemer/:id/address 设置用户地址
      * @apiVersion 0.0.1
      * @apiGroup custemer
+     * @apiPermission owner
+     * @apiHeader Authorization JWT token
      * @apiParam {Number} id 用户id
      * @apiParam {Number} apartment 公寓id
      * @apiParam {String} room 房间号
@@ -105,9 +103,7 @@ class CustemerController extends Controller
     {
         $id = $request->id;
         $tokenId = JWTAuth::parseToken()->authenticate()->id;
-        if ($id != $tokenId) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if($id != $tokenId, 401, 'NOT_ALLOWED');
 
         $validator = Validator::make($request->all(), [
             'apartment' => 'required|integer|exists:apartment,id',

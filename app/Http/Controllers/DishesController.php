@@ -43,6 +43,7 @@ class DishesController extends Controller
      * @api {post} /api/dishes/:id/set 修改菜品信息
      * @apiVersion 0.0.1
      * @apiGroup dishes
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {Number} id 菜品id
      * @apiParam {String} name 名称
@@ -66,12 +67,10 @@ class DishesController extends Controller
         $dishesId = $request->id;
         $dishes = Dishes::find($dishesId);
 
-        if (!isset($dishes)) throw new HttpException(404, 'DISHES_NOT_EXISTS');
+        abort_if(!isset($dishes), 404, 'DISHES_NOT_EXISTS');
 
         $shop = JWTAuth::parseToken()->authenticate()->id;
-        if (Shop::where('user_id', $shop)->value('id') != $dishes->provider) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if(Shop::where('user_id', $shop)->value('id') != $dishes->provider, 401, 'NOT_ALLOWED');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:30',
@@ -97,6 +96,7 @@ class DishesController extends Controller
      * @api {post} /api/dishes/:id/status/set 修改菜品状态
      * @apiVersion 0.0.1
      * @apiGroup dishes
+     * @apiPermission owner
      * @apiHeader Authorization JWT token
      * @apiParam {Number} id 菜品id
      * @apiParam {Number} status 新的状态
@@ -109,12 +109,10 @@ class DishesController extends Controller
         $dishesId = $request->id;
         $dishes = Dishes::find($dishesId);
 
-        if (!isset($dishes)) throw new HttpException(404, 'DISHES_NOT_EXISTS');
+        abort_if(!isset($dishes), 404, 'DISHES_NOT_EXISTS');
 
         $shop = JWTAuth::parseToken()->authenticate()->id;
-        if (Shop::where('user_id', $shop)->value('id') != $dishes->provider) {
-            throw new HttpException(401, 'NOT_ALLOWED');
-        }
+        abort_if(Shop::where('user_id', $shop)->value('id') != $dishes->provider, 401, 'NOT_ALLOWED');
 
         $validator = Validator::make($request->all(), [
             'status' => 'required|integer|in:0,1,2',

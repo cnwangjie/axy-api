@@ -7,7 +7,6 @@ use Validator;
 use JWTAuth;
 use App\Models\Canteen;
 use App\Models\Shop;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * @apiDefine canteen 餐厅

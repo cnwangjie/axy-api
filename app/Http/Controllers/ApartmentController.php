@@ -24,16 +24,15 @@ class ApartmentController extends Controller
     {
         $apartmentId = $request->id;
         $apartment = Apartment::find($apartmentId);
-        if (is_null($apartment)) {
-            throw new HttpException(404, 'APARTMENT_NOT_EXISTS');
-        }
+
+        abort_if(is_null($apartment), 404, 'APARTMENT_NOT_EXISTS');
 
         return $apartment->beSupplied;
     }
 
 
     /**
-     * @api {get} /api/apartment/:id/canteen 供应该公寓的所有商家
+     * @api {get} /api/apartment/:id/shop 供应该公寓的所有商家
      * @apiVersion 0.0.1
      * @apiGroup apartment
      * @apiParam {Number} id 公寓id
@@ -44,9 +43,7 @@ class ApartmentController extends Controller
     {
         $apartmentId = $request->id;
         $apartment = Apartment::find($apartmentId);
-        if (is_null($apartment)) {
-            throw new HttpException(404, 'APARTMENT_NOT_EXISTS');
-        }
+        abort_if(is_null($apartment), 404, 'APARTMENT_NOT_EXISTS');
 
         return $apartment->beSupplied->map(function ($canteen) {
             return $canteen->shop;
